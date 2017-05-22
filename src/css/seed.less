@@ -20,8 +20,25 @@
 .schedule-container {
   position: relative;
 
-  h2 {
-    margin: 0;
+  .doctor {
+    margin: 10px 0;
+  }
+
+  .info {
+    .display-flex();
+    .justify-content(space-between);
+    .align-items(flex-end);
+
+    h2 {
+      margin: 0;
+      display: inline-block;
+      font-size: 16px;
+    }
+
+    .stats {
+      font-size: 14px;
+    }
+
   }
 
   .stats[data-intersection="0"] {
@@ -51,24 +68,40 @@ svg.schedule {
   width: 100%;
   background: @df-off-white;
 
+  @media @mobile {
+    height: 20vh;
+  }
+
   text {
     fill: @df-middle-gray;
   }
 
   .tick {
     stroke: @df-light-gray;
+
+    @media @mobile {
+      stroke: none;
+
+      &[data-hour="8"],
+      &[data-hour="12"],
+      &[data-hour="16"],
+      &[data-hour="20"] {
+        stroke: black;
+        stroke-width: 1px;
+      }
+    }
   }
 
   .surgery-rectangle {
-    fill: @st-dark-red;
+    fill: #b23b41;
   }
 
   .anesthesia-rectangle {
-    fill: @st-light-red;
+    fill: #efc8c0;
   }
 
   .intersection-rectangle {
-    fill: #FFE752;
+    fill: #FFD493;
     //fade(@df-dark-gray, 20%);
     // stroke: darken(@st-dark-orange, 50%);
     stroke-width: .1;

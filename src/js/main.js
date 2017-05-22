@@ -11,8 +11,8 @@ var ROW_WIDTH = 800;
 var TEXT_SIZE = ROW_WIDTH / 120;
 var ROW_HEIGHT = ROW_WIDTH / 40;
 var SCHEDULE_PADDING = ROW_HEIGHT / 2;
-var ROW_PADDING = 1;
-var ANESTHESIA_PADDING = .4;
+var ROW_PADDING = ROW_HEIGHT / 10;
+var ANESTHESIA_PADDING = ROW_PADDING * .5;
 
 var guid = 0;
 
@@ -126,6 +126,7 @@ var renderToday = function(today) {
 </text>
 <line
   class="tick"
+  data-hour="${i}"
   x1="${i / 24 * ROW_WIDTH}"
   x2="${i / 24 * ROW_WIDTH}"
   y1="0"
@@ -139,12 +140,15 @@ var renderToday = function(today) {
     var viewBox = `${earliest} 0 ${latest} ${ROW_HEIGHT * rows.length + SCHEDULE_PADDING * 2}`;
 
     var docElement = document.createElement("div");
+    docElement.className = "doctor";
     docElement.innerHTML = `
-<h2>${name}</h2>
-<div class="stats" data-intersection="${intersectionTime}">
-  Concurrent surgery: ${(intersectionTime * 2 / surgicalTime * 100).toFixed(1)}%
+<div class="info">
+  <h2>${name}</h2>
+  <span class="stats" data-intersection="${intersectionTime}">
+    Overlapping surgery: ${(intersectionTime * 2 / surgicalTime * 100).toFixed(1)}%
+  </span>
 </div>
-<svg class="schedule" viewbox="${viewBox}" data-rows="${rows.length}">
+<svg class="schedule" viewbox="${viewBox}" data-rows="${rows.length}" preserveAspectRatio="none">
   <g class="shading">${intersectionGroup}</g>
   <g class="hours">${hourGroup}</g>
   <g class="surgeries">${rowGroup}</g>
