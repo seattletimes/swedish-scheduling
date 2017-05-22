@@ -156,6 +156,21 @@ var renderToday = function(today) {
 
 renderToday(days[0]);
 
+var formatDate = d => {
+  var suffix = "am";
+  var [hour, minute] = d.split(":");
+  hour = hour * 1;
+  if (hour == 24) {
+    hour = 12;
+  } else if (hour > 12) {
+    suffix = "pm";
+    hour -= 12;
+  } else if (hour == 12) {
+    suffix = "pm";
+  }
+  return `${hour}:${minute} ${suffix}`;
+}
+
 var tooltip = $.one(".tooltip", container);
 
 rowContainer.addEventListener("mousemove", function(e) {
@@ -169,12 +184,14 @@ rowContainer.addEventListener("mousemove", function(e) {
     tooltip.innerHTML = `
 ${data.procedure}
 <ul>
-  <li> Anesthesia: ${data.anesthesiaStart} - ${data.anesthesiaStop}
-  <li> Surgery: ${data.surgeryStart} - ${data.surgeryStop}
+  <li> Anesthesia: ${formatDate(data.anesthesiaStart)} - ${formatDate(data.anesthesiaStop)}
+  <li> Surgery: ${formatDate(data.surgeryStart)} - ${formatDate(data.surgeryStop)}
 <ul>
-    `
-    tooltip.style.left = (e.clientX - bounds.left) + "px";
-    tooltip.style.top = (e.clientY - bounds.top + 20) + "px";
+    `;
     tooltip.classList.add("show");
+    var x = e.clientX - bounds.left;
+    if (x > bounds.width / 2) x = e.clientX - bounds.left - tooltip.offsetWidth;
+    tooltip.style.left = x + "px";
+    tooltip.style.top = (e.clientY - bounds.top + 20) + "px";
   }
 });
