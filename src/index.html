@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <%= t.include("partials/_head.html", grunt.data.json) %>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+
+    <responsive-child>
+      <main class="interactive">
+        <div class="schedule-controls">
+          <button class="active-day" data-day="11/02/2015">Monday</button>
+          <button data-day="11/03/2015">Tuesday</button>
+          <button data-day="11/04/2015">Wednesday</button>
+          <button data-day="11/05/2015">Thursday</button>
+          <button data-day="11/06/2015">Friday</button>
+        </div>
+        <div class="schedule-container">
+          <div class="rows"></div>
+          <div class="tooltip"></div>
+        </div>
+      </main>
+    </responsive-child>
+
+    <script>
+window.swedish = <%= JSON.stringify(csv.schedule) %>;
+    </script>
+
+    <script src="app.js" async></script>
+    <% if (json.project.production) { %>
+    <%= !json.project.embedded ? t.include("partials/_foot.html") : "" %>
+    <%= t.include("partials/_workHere.html") %>
+    <% } %>
+  </body>
+</html>

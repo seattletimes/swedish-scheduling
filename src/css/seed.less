@@ -1,0 +1,77 @@
+@import "seattletimes";
+
+.interactive {
+  max-width: 960px;
+}
+
+.schedule-controls {
+  button {
+    background: white;
+    border: 1px solid @df-light-gray;
+    padding: 4px 8px;
+
+    &.active-day {
+      background: @df-light-gray;
+      border: 1px solid @df-middle-gray;
+    }
+  }
+}
+
+.schedule-container {
+  position: relative;
+
+  h2 {
+    margin: 0;
+  }
+
+  .stats[data-intersection="0"] {
+    display: none;
+  }
+
+  .tooltip {
+    position: absolute;
+    padding: 10px;
+    display: block;
+    background: white;
+    display: none;
+    font-size: 14px;
+    max-width: 300px;
+
+    &.show {
+      display: block;
+    }
+
+    ul {
+      margin: 0;
+    }
+  }
+}
+
+svg.schedule {
+  width: 100%;
+  background: @df-off-white;
+
+  text {
+    fill: @df-middle-gray;
+  }
+
+  .tick {
+    stroke: @df-light-gray;
+  }
+
+  .surgery-rectangle {
+    fill: @st-dark-red;
+  }
+
+  .anesthesia-rectangle {
+    fill: @st-light-red;
+  }
+
+  .intersection-rectangle {
+    fill: #FFE752;
+    //fade(@df-dark-gray, 20%);
+    // stroke: darken(@st-dark-orange, 50%);
+    stroke-width: .1;
+    stroke-dasharray: 1 .5;
+  }
+}
