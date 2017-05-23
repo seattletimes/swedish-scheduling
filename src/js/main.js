@@ -43,7 +43,7 @@ var rowContainer = $.one(".rows", container);
 var controls = $(".schedule-controls");
 
 controls.forEach(c => c.addEventListener("click", function(e) {
-  var date = e.target.getAttribute("data-day");
+  var date = closest(e.target, "button").getAttribute("data-day");
   if (!date) {
     if (e.target.classList.contains("day")) {
       var direction = e.target.classList.contains("next") ? 1 : -1;
@@ -161,10 +161,10 @@ var renderToday = function(today) {
 <div class="info">
   <h2>${name}</h2>
   <span class="stats" data-intersection="${intersectionTime}">
-    Overlapping surgery: ${(intersectionTime * 2 / surgicalTime * 100).toFixed(1)}%
+    Overlapping surgery: <span class="overlap">${(intersectionTime * 2 / surgicalTime * 100).toFixed(1)}%</span>
   </span>
 </div>
-<svg class="schedule" viewbox="${viewBox}" data-rows="${rows.length}" preserveAspectRatio="none">
+<svg class="schedule" viewbox="${viewBox}" data-rows="${rows.length}" preserveAspectRatio="xMinYMin meet">
   <g class="shading">${intersectionGroup}</g>
   <g class="hours">${hourGroup}</g>
   <g class="surgeries">${rowGroup}</g>
@@ -193,6 +193,8 @@ var formatDate = d => {
 
 var tooltip = $.one(".tooltip", container);
 
+var sentence = s => s.toLowerCase().replace(/^\w|\s\w/g, c => c.toUpperCase());
+
 var onMove = function(e) {
   var parent = e.target.parentElement;
   var id = parent.getAttribute("data-guid");
@@ -202,7 +204,7 @@ var onMove = function(e) {
   } else {
     var bounds = container.getBoundingClientRect();
     tooltip.innerHTML = `
-${data.procedure}
+<h3>${sentence(data.procedure)}</h3>
 <ul>
   <li> Anesthesia: ${formatDate(data.anesthesiaStart)} - ${formatDate(data.anesthesiaStop)}
   <li> Surgery: ${formatDate(data.surgeryStart)} - ${formatDate(data.surgeryStop)}

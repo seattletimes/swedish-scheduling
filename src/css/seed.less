@@ -5,10 +5,10 @@
   font-size: 16px;
 
   h1 {
-    font-size: 20px;
+    font-size: 24px;
   }
 
-  .source, .credit {
+  .source, .note, .credit {
     font-size: 14px;
   }
 
@@ -58,13 +58,17 @@
     .align-items(flex-end);
 
     h2 {
-      margin: 0;
+      margin: 15px 0 5px;
       display: inline-block;
       font-size: 16px;
     }
 
     .stats {
       font-size: 14px;
+    }
+
+    .overlap {
+      font-weight: bold;
     }
 
   }
@@ -92,6 +96,11 @@
       }
     }
 
+    h3 {
+      font-size: 14px;
+      margin: 0;
+    }
+
     ul {
       margin: 0;
       padding: 0;
@@ -105,7 +114,7 @@ svg.schedule {
   background: @df-off-white;
 
   @media @mobile {
-    height: 20vh;
+    height: 10vh;
   }
 
   text {
@@ -113,6 +122,13 @@ svg.schedule {
 
     @media @tablet {
       display: none;
+
+      &[data-hour="8"],
+      &[data-hour="12"],
+      &[data-hour="16"],
+      &[data-hour="20"] {
+        display: block;
+      }
     }
   }
 
