@@ -13,16 +13,17 @@ var guid = 0;
 
 schedule.forEach(function(row) {
   
-  if (!byDate[row.date]) byDate[row.date] = {};
+  if (!byDate[row.date]) byDate[row.date] = { /*bounds: { start: TIME_OFFSET, end: 24 }*/};
   if (!byDate[row.date][row.surgeon]) byDate[row.date][row.surgeon] = [];
   byDate[row.date][row.surgeon].push(row);
 
   ["surgeryStart", "surgeryStop", "anesthesiaStart", "anesthesiaStop"].forEach(function(prop) {
     var timeString = row[prop];
     var [hours, minutes] = timeString.split(":").map(Number);
-    var ratio = (hours - TIME_OFFSET) / 24;
+    var ratio = (hours - TIME_OFFSET) / (24 - TIME_OFFSET);
     ratio += (minutes / 60) / 24;
     row[prop + "Ratio"] = ratio;
+    row[prop + "Decimal"] = hours + minutes / 60;
   });
 
   row.id = guid++;
