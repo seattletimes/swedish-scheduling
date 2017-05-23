@@ -30,7 +30,7 @@
   text-align: center;
   font-size: 14px;
   // text-transform: uppercase;
-  margin: 20px 0;
+  margin: 0;
   padding: 0;
 
   li {
@@ -75,10 +75,19 @@
 
 .schedule-container {
   position: relative;
+  padding: 20px 0;
 
   .doctor {
     margin: 10px 0;
-    border-top: 1px solid @df-light-gray;
+
+    &:first-child {
+      border-top: none;
+      margin-top: 0;
+
+      h2 {
+        margin-top: 0;
+      }
+    }
   }
 
   .info {
@@ -127,7 +136,7 @@
 
     h3 {
       font-size: 14px;
-      margin: 0;
+      margin: 0 0 4px;
     }
 
     ul {
