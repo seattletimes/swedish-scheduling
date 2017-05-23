@@ -2,9 +2,36 @@
 
 .interactive {
   max-width: 960px;
+  font-size: 16px;
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .source, .credit {
+    font-size: 14px;
+  }
+
+  .source {
+    margin-top: 20px;
+  }
+
+  .credit {
+    text-align: right;
+  }
 }
 
 .schedule-controls {
+  text-align: center;
+  .short { display: none }
+
+  @media @mobile {
+    .display-flex();
+
+    .long { display: none }
+    .short { display: block }
+  }
+
   button {
     background: white;
     border: 1px solid @df-light-gray;
@@ -22,6 +49,7 @@
 
   .doctor {
     margin: 10px 0;
+    border-top: 1px solid @df-light-gray;
   }
 
   .info {
@@ -53,13 +81,21 @@
     display: none;
     font-size: 14px;
     max-width: 300px;
+    box-shadow: 4px 4px 8px 4px fade(black, 10%);
 
     &.show {
       display: block;
+      @media @mobile {
+        left: 0 !important;
+        width: 100% !important;
+        max-width: 100%;
+      }
     }
 
     ul {
       margin: 0;
+      padding: 0;
+      list-style-type: none;
     }
   }
 }
@@ -74,10 +110,15 @@ svg.schedule {
 
   text {
     fill: @df-middle-gray;
+
+    @media @tablet {
+      display: none;
+    }
   }
 
   .tick {
     stroke: @df-light-gray;
+    stroke-width: .5px;
 
     @media @mobile {
       stroke: none;

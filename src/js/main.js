@@ -8,9 +8,9 @@ var byDate = {};
 var byGuid = {};
 
 var ROW_WIDTH = 800;
-var TEXT_SIZE = ROW_WIDTH / 120;
+var TEXT_SIZE = ROW_WIDTH / 90;
 var ROW_HEIGHT = ROW_WIDTH / 40;
-var SCHEDULE_PADDING = ROW_HEIGHT / 2;
+var SCHEDULE_PADDING = ROW_HEIGHT * .75;
 var ROW_PADDING = ROW_HEIGHT / 10;
 var ANESTHESIA_PADDING = ROW_PADDING * .5;
 
@@ -40,19 +40,35 @@ var days = Object.keys(byDate).sort();
 
 var container = $.one(".schedule-container");
 var rowContainer = $.one(".rows", container);
-var controls = $.one(".schedule-controls");
+var controls = $(".schedule-controls");
 
-controls.addEventListener("click", function(e) {
+controls.forEach(c => c.addEventListener("click", function(e) {
   var date = e.target.getAttribute("data-day");
-  if (!date) return;
+  if (!date) {
+    if (e.target.classList.contains("day")) {
+      var direction = e.target.classList.contains("next") ? 1 : -1;
+      var currentButtons = $("button.active-day")
+      var currentDay = currentButtons[0].getAttribute("data-day");
+      var index = days.indexOf(currentDay);
+      index = (index + direction) % days.length;
+      if (index < 0) index = days.length - 1;
+      var today = days[index];
+      var buttons = $(`[data-day="${today}"]`);
+      currentButtons.forEach(b => b.classList.remove("active-day"));
+      buttons.forEach(b => b.classList.add("active-day"));
+      renderToday(today);
+    }
+    return;
+  }
   $("button.active-day").forEach(el => el.classList.remove("active-day"));
-  e.target.classList.add("active-day");
+  $(`[data-day="${date}"]`).forEach(el => el.classList.add("active-day"));
   renderToday(date);
-});
+}));
 
 var renderToday = function(today) {
   rowContainer.innerHTML = "";
   var day = byDate[today];
+  if (!day) return console.log(today, byDate[today]);
   Object.keys(day).sort().forEach(function(name) {
     var surgeries = day[name];
     var rows = [0];
@@ -122,7 +138,7 @@ var renderToday = function(today) {
   style="font-size: ${TEXT_SIZE}px"
   data-hour="${i}"
 >
-  ${i > 12 ? i - 12 + "pm" : i + "am"}
+  ${i > 12 ? i - 12 + " PM" : i + " AM"}
 </text>
 <line
   class="tick"
@@ -161,23 +177,23 @@ var renderToday = function(today) {
 renderToday(days[0]);
 
 var formatDate = d => {
-  var suffix = "am";
+  var suffix = "AM";
   var [hour, minute] = d.split(":");
   hour = hour * 1;
   if (hour == 24) {
     hour = 12;
   } else if (hour > 12) {
-    suffix = "pm";
+    suffix = "PM";
     hour -= 12;
   } else if (hour == 12) {
-    suffix = "pm";
+    suffix = "PM";
   }
   return `${hour}:${minute} ${suffix}`;
 }
 
 var tooltip = $.one(".tooltip", container);
 
-rowContainer.addEventListener("mousemove", function(e) {
+var onMove = function(e) {
   var parent = e.target.parentElement;
   var id = parent.getAttribute("data-guid");
   var data = byGuid[id];
@@ -193,9 +209,14 @@ ${data.procedure}
 <ul>
     `;
     tooltip.classList.add("show");
-    var x = e.clientX - bounds.left;
-    if (x > bounds.width / 2) x = e.clientX - bounds.left - tooltip.offsetWidth;
-    tooltip.style.left = x + "px";
-    tooltip.style.top = (e.clientY - bounds.top + 20) + "px";
+    var x = e.touches ? e.touches[0].clientX : e.clientX;
+    var y = e.touches ? e.touches[0].clientY : e.clientY;
+    var tx = x - bounds.left;
+    if (tx > bounds.width / 2) tx = x - bounds.left - tooltip.offsetWidth;
+    tooltip.style.left = tx + "px";
+    tooltip.style.top = (y - bounds.top + 20) + "px";
   }
-});
+};
+
+rowContainer.addEventListener("mousemove", onMove);
+rowContainer.addEventListener("touchmove", onMove);
