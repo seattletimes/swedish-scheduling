@@ -7,12 +7,7 @@ var schedule = window.swedish;
 var byDate = {};
 var byGuid = {};
 
-var ROW_WIDTH = 800;
-var TEXT_SIZE = ROW_WIDTH / 90;
-var ROW_HEIGHT = ROW_WIDTH / 40;
-var SCHEDULE_PADDING = ROW_HEIGHT * .75;
-var ROW_PADDING = ROW_HEIGHT / 10;
-var ANESTHESIA_PADDING = ROW_PADDING * .5;
+var TIME_OFFSET = 5;
 
 var guid = 0;
 
@@ -25,7 +20,7 @@ schedule.forEach(function(row) {
   ["surgeryStart", "surgeryStop", "anesthesiaStart", "anesthesiaStop"].forEach(function(prop) {
     var timeString = row[prop];
     var [hours, minutes] = timeString.split(":").map(Number);
-    var ratio = hours / 24;
+    var ratio = (hours - TIME_OFFSET) / 24;
     ratio += (minutes / 60) / 24;
     row[prop + "Ratio"] = ratio;
   });
@@ -71,39 +66,44 @@ var renderToday = function(today) {
   if (!day) return console.log(today, byDate[today]);
   Object.keys(day).sort().forEach(function(name) {
     var surgeries = day[name];
-    var rows = [0];
-    var rowGroup = "";
-    var intersectionGroup = "";
-    var hourGroup = ""
+    var rowSpace = [0];
+    var rowHTML = [];
+    var intersectionHTML = "";
+    var hourHTML = ""
 
     var surgicalTime = 0;
     var intersectionTime = 0;
 
     //render anesthesia/surgery
     surgeries.sort((a, b) => a.start - b.start).forEach(function(s) {
-      var row = rows.length;
-      rows.forEach(function(r, i) {
+      var row = rowSpace.length;
+      rowSpace.forEach(function(r, i) {
         if (r < s.start) row = i;
       });
-      rows[row] = s.end;
+      rowSpace[row] = s.end;
       surgicalTime += s.surgeryStopRatio - s.surgeryStartRatio;
-      rowGroup += `
-<g data-guid="${s.id}">
-  <rect
-    class="anesthesia-rectangle"
-    x="${s.anesthesiaStartRatio * ROW_WIDTH}"
-    y="${row * ROW_HEIGHT + ROW_PADDING + ANESTHESIA_PADDING + SCHEDULE_PADDING}"
-    width="${(s.anesthesiaStopRatio - s.anesthesiaStartRatio) * ROW_WIDTH}"
-    height="${ROW_HEIGHT - ROW_PADDING * 2 - ANESTHESIA_PADDING * 2}">
-  </rect>
-  <rect
-    class="surgery-rectangle"
-    x="${s.surgeryStartRatio * ROW_WIDTH}"
-    y="${row * ROW_HEIGHT + ROW_PADDING + SCHEDULE_PADDING}"
-    width="${(s.surgeryStopRatio - s.surgeryStartRatio) * ROW_WIDTH}"
-    height="${ROW_HEIGHT - ROW_PADDING * 2}">
-  </rect>
-</g>
+      if (!rowHTML[row]) rowHTML[row] = "";
+      var aCoords = {
+        left: s.anesthesiaStartRatio * 100,
+        width: (s.anesthesiaStopRatio - s.anesthesiaStartRatio) * 100
+      };
+      var sCoords = {
+        left: s.surgeryStartRatio * 100,
+        width: (s.surgeryStopRatio - s.surgeryStartRatio) * 100
+      };
+      rowHTML[row] += `
+<div data-guid="${s.id}">
+  <div
+    class="anesthesia rectangle"
+    style="left: ${aCoords.left.toFixed(1)}%; width: ${aCoords.width.toFixed(1)}%;"
+  >
+  </div>
+  <div
+    class="surgery rectangle"
+    style="left: ${sCoords.left.toFixed(1)}%; width: ${sCoords.width.toFixed(1)}%;"
+  >
+  </div>
+</div>
       `
     });
 
@@ -116,47 +116,41 @@ var renderToday = function(today) {
         var end = Math.min(s.surgeryStopRatio, t.surgeryStopRatio);
         if (end > start) {
           intersectionTime += end - start;
-          intersectionGroup += `
-<rect
-  class="intersection-rectangle"
-  x="${start * ROW_WIDTH}"
-  y="0"
-  width="${(end - start) * ROW_WIDTH}"
-  height="${ROW_HEIGHT * rows.length + SCHEDULE_PADDING * 2}">
-</rect>
+          var x = start * 100;
+          var width = (end - start) * 100;
+          intersectionHTML += `
+<div
+  class="intersection rectangle"
+  style="left: ${x.toFixed(1)}%; width: ${width.toFixed(1)}%;"
+>
+</div>
         `;
         }
       }
     }
 
     //render the hour markers
-    for (var i = 5; i < 24; i++) {
-      hourGroup += `
-<text
-  x="${i / 24 * ROW_WIDTH + 2}"
-  y="${TEXT_SIZE}"
-  style="font-size: ${TEXT_SIZE}px"
+    for (var i = TIME_OFFSET; i < 24; i++) {
+      var x = (i - TIME_OFFSET) / 19 * 100;
+      hourHTML += `
+<div class="hour"
+  style="left: ${x.toFixed(1)}%;"
   data-hour="${i}"
 >
   ${i > 12 ? i - 12 + " PM" : i + " AM"}
-</text>
-<line
+</div>
+<div
   class="tick"
   data-hour="${i}"
-  x1="${i / 24 * ROW_WIDTH}"
-  x2="${i / 24 * ROW_WIDTH}"
-  y1="0"
-  y2="${rows.length * ROW_HEIGHT + SCHEDULE_PADDING * 2}"
-></line>
+  style="left: ${x.toFixed(1)}%"
+></div>
       `
     }
 
-    var earliest = 5 / 24 * ROW_WIDTH;
-    var latest = ROW_WIDTH - earliest;
-    var viewBox = `${earliest} 0 ${latest} ${ROW_HEIGHT * rows.length + SCHEDULE_PADDING * 2}`;
-
     var docElement = document.createElement("div");
     docElement.className = "doctor";
+    var rows = rowHTML.map(r => `<div class="row">${r}</div>`).join("");
+    var intersections = 
     docElement.innerHTML = `
 <div class="info">
   <h2>${name}</h2>
@@ -164,11 +158,11 @@ var renderToday = function(today) {
     Overlapping surgery: <span class="overlap">${(intersectionTime * 2 / surgicalTime * 100).toFixed(1)}%</span>
   </span>
 </div>
-<svg class="schedule" viewbox="${viewBox}" data-rows="${rows.length}" preserveAspectRatio="xMinYMin meet">
-  <g class="shading">${intersectionGroup}</g>
-  <g class="hours">${hourGroup}</g>
-  <g class="surgeries">${rowGroup}</g>
-</svg>
+<div class="schedule">
+  ${intersectionHTML}
+  <div class="timeline">${hourHTML}</div>
+  <div class="rows">${rows}</div>
+</div>
     `;
     rowContainer.appendChild(docElement);
   });

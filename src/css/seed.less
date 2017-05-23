@@ -109,16 +109,52 @@
   }
 }
 
-svg.schedule {
-  width: 100%;
+div.schedule {
   background: @df-off-white;
+  position: relative;
 
-  @media @mobile {
-    height: 10vh;
+  .rows {
+    position: relative;
+    padding: 8px 0;
+
+    .row {
+      margin: 8px 0;
+      height: 20px;
+      position: relative;
+      display: block;
+    }
   }
 
-  text {
-    fill: @df-middle-gray;
+  .rectangle {
+    position: absolute;
+    height: 100%;
+    top: 0;
+
+    &.anesthesia {
+      background: #efc8c0;
+      top: 4px;
+      bottom: 4px;
+      height: auto;
+    }
+
+    &.surgery {
+      background: #b23b41;
+    }
+
+    &.intersection {
+      background: #FFD493;
+    }
+  }
+
+  .timeline {
+    height: 20px;
+  }
+
+  .hour {
+    position: absolute;
+    font-size: 12px;
+    color: @df-middle-gray;
+    padding-left: 2px;
 
     @media @tablet {
       display: none;
@@ -133,35 +169,21 @@ svg.schedule {
   }
 
   .tick {
-    stroke: @df-light-gray;
-    stroke-width: .5px;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: @df-light-gray;
 
     @media @mobile {
-      stroke: none;
+      display: none;
 
       &[data-hour="8"],
       &[data-hour="12"],
       &[data-hour="16"],
       &[data-hour="20"] {
-        stroke: black;
-        stroke-width: 1px;
+        display: block;
       }
     }
-  }
-
-  .surgery-rectangle {
-    fill: #b23b41;
-  }
-
-  .anesthesia-rectangle {
-    fill: #efc8c0;
-  }
-
-  .intersection-rectangle {
-    fill: #FFD493;
-    //fade(@df-dark-gray, 20%);
-    // stroke: darken(@st-dark-orange, 50%);
-    stroke-width: .1;
-    stroke-dasharray: 1 .5;
   }
 }
