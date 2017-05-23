@@ -26,7 +26,6 @@
   .short { display: none }
 
   @media @mobile {
-    .display-flex();
 
     .long { display: none }
     .short { display: block }
@@ -117,11 +116,19 @@ div.schedule {
     position: relative;
     padding: 8px 0;
 
+    @media @mobile {
+      padding: 0 0 4px;
+    }
+
     .row {
       margin: 8px 0;
       height: 20px;
       position: relative;
       display: block;
+
+      @media @mobile {
+        height: 13px;
+      }
     }
   }
 
@@ -148,6 +155,10 @@ div.schedule {
 
   .timeline {
     height: 20px;
+
+    @media @mobile {
+      height: 14px;
+    }
   }
 
   .hour {
