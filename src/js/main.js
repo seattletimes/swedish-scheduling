@@ -8,6 +8,7 @@ var byDate = {};
 var byGuid = {};
 
 var TIME_OFFSET = 5;
+var STACKING_TOLERANCE = 1 / 60 / 24;
 
 var guid = 0;
 
@@ -23,7 +24,7 @@ schedule.forEach(function(row) {
     var ratio = (hours - TIME_OFFSET) / (24 - TIME_OFFSET);
     ratio += (minutes / 60) / 24;
     row[prop + "Ratio"] = ratio;
-    row[prop + "Decimal"] = hours + minutes / 60;
+    row[prop + "Minutes"] = hours * 60 + minutes;
   });
 
   row.id = guid++;
@@ -79,13 +80,13 @@ var renderToday = function(today) {
     surgeries.sort((a, b) => a.start - b.start).forEach(function(s) {
       var row = rowSpace.length;
       for (var i = 0; i < rowSpace.length; i++) {
-        if (rowSpace[i] < s.start) {
+        if (rowSpace[i] + STACKING_TOLERANCE < s.start) {
           row = i;
           break;
         }
       }
       rowSpace[row] = s.end;
-      surgicalTime += s.surgeryStopRatio - s.surgeryStartRatio;
+      surgicalTime += s.surgeryStopMinutes - s.surgeryStartMinutes;
       if (!rowHTML[row]) rowHTML[row] = "";
       var aCoords = {
         left: s.anesthesiaStartRatio * 100,
@@ -118,8 +119,10 @@ var renderToday = function(today) {
         var t = surgeries[j];
         var start = Math.max(s.surgeryStartRatio, t.surgeryStartRatio);
         var end = Math.min(s.surgeryStopRatio, t.surgeryStopRatio);
+        var startMinute = Math.max(s.surgeryStartMinutes, t.surgeryStartMinutes);
+        var endMinute = Math.min(s.surgeryStopMinutes, t.surgeryStopMinutes);
         if (end > start) {
-          intersectionTime += end - start;
+          intersectionTime += endMinute - startMinute;
           var x = start * 100;
           var width = (end - start) * 100;
           intersectionHTML += `
