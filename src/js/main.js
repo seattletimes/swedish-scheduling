@@ -78,9 +78,12 @@ var renderToday = function(today) {
     //render anesthesia/surgery
     surgeries.sort((a, b) => a.start - b.start).forEach(function(s) {
       var row = rowSpace.length;
-      rowSpace.forEach(function(r, i) {
-        if (r < s.start) row = i;
-      });
+      for (var i = 0; i < rowSpace.length; i++) {
+        if (rowSpace[i] < s.start) {
+          row = i;
+          break;
+        }
+      }
       rowSpace[row] = s.end;
       surgicalTime += s.surgeryStopRatio - s.surgeryStartRatio;
       if (!rowHTML[row]) rowHTML[row] = "";
