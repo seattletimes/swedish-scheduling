@@ -138,7 +138,7 @@ var renderToday = function(today) {
   style="left: ${x.toFixed(1)}%;"
   data-hour="${i}"
 >
-  ${i > 12 ? i - 12 + " PM" : i + " AM"}
+  ${i > 12 ? i - 12 + " PM" : i == 12 ? i + " PM" : i + " AM"}
 </div>
 <div
   class="tick"
