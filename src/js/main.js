@@ -22,7 +22,7 @@ schedule.forEach(function(row) {
     var timeString = row[prop];
     var [hours, minutes] = timeString.split(":").map(Number);
     var ratio = (hours - TIME_OFFSET) / (24 - TIME_OFFSET);
-    ratio += (minutes / 60) / 24;
+    ratio += (minutes / 60) / (24 - TIME_OFFSET);
     row[prop + "Ratio"] = ratio;
     row[prop + "Minutes"] = hours * 60 + minutes;
   });
