@@ -66,7 +66,11 @@ var renderToday = function(today) {
   rowContainer.innerHTML = "";
   var day = byDate[today];
   if (!day) return console.log(today, byDate[today]);
-  Object.keys(day).sort().forEach(function(name) {
+  Object.keys(day).sort((a, b) => {
+    a = a.split(" ").pop();
+    b = b.split(" ").pop();
+    return a < b ? -1 : 1;
+  }).forEach(function(name) {
     var surgeries = day[name];
     var rowSpace = [0];
     var rowHTML = [];
@@ -77,7 +81,7 @@ var renderToday = function(today) {
     var intersectionTime = 0;
 
     //render anesthesia/surgery
-    surgeries.sort((a, b) => a.start - b.start).forEach(function(s) {
+    surgeries.sort(((a, b) => a.start - b.start)).forEach(function(s) {
       var row = rowSpace.length;
       for (var i = 0; i < rowSpace.length; i++) {
         if (rowSpace[i] + STACKING_TOLERANCE < s.start) {
