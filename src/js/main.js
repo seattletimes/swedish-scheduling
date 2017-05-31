@@ -166,7 +166,7 @@ var renderToday = function(today) {
 <div class="info">
   <h2>${name}</h2>
   <span class="stats" data-intersection="${intersectionTime}">
-    Overlapping surgery: <span class="overlap">${(intersectionTime * 2 / surgicalTime * 100).toFixed(1)}%</span>
+    Overlapping surgery time: <span class="overlap">${(intersectionTime * 2 / surgicalTime * 100).toFixed(1)}%</span>
   </span>
 </div>
 <div class="schedule">
